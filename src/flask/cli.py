@@ -1075,7 +1075,7 @@ def routes_command(sort: str, all_methods: bool) -> None:
         if rule.endpoint == "_automatic_options":
             continue
 
-        methods = rule.methods or set()
+        methods = rule.methods.copy() if rule.methods else set()
 
         if getattr(rule, "provide_automatic_options", False):
             methods.add("OPTIONS")

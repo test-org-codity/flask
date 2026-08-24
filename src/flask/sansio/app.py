@@ -613,6 +613,13 @@ class App(Scaffold):
         if endpoint is None:
             endpoint = _endpoint_from_view_func(view_func)  # type: ignore
 
+        if endpoint == "_automatic_options":
+            raise ValueError(
+                "The endpoint name '_automatic_options' is reserved for"
+                " Flask's internal automatic OPTIONS handling and cannot"
+                " be used for a view."
+            )
+
         methods = options.pop("methods", None)
 
         # if the methods are not given and the view_func object knows its
@@ -658,17 +665,14 @@ class App(Scaffold):
             self.view_functions[endpoint] = view_func
 
         if provide_automatic_options:
-            try:
-                self.url_map.add(
-                    self.url_rule_class(
-                        rule,
-                        methods={"OPTIONS"},
-                        endpoint="_automatic_options",
-                        **options,
-                    )
+            self.url_map.add(
+                self.url_rule_class(
+                    rule,
+                    methods={"OPTIONS"},
+                    endpoint="_automatic_options",
+                    **options,
                 )
-            except Exception:
-                pass
+            )
 
     @t.overload
     def template_filter(self, name: T_template_filter) -> T_template_filter: ...
